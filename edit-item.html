@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Menu Item - Fried Zone Admin</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: var(--clr-bg-alt);
+            padding-top: 40px;
+            padding-bottom: 80px;
+        }
+
+        .edit-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--clr-bg-card);
+            padding: 50px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 20px;
+        }
+
+        .edit-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--clr-text);
+        }
+
+        .back-btn {
+            color: var(--clr-text-muted);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            color: var(--clr-primary);
+            transform: translateX(-5px);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 40px;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: var(--clr-text);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--clr-accent);
+            background: #fff;
+            box-shadow: 0 0 15px rgba(255, 159, 28, 0.1);
+        }
+
+        .preview-section {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: var(--radius-md);
+            border: 2px dashed rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .preview-title {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--clr-text-muted);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .img-preview-box {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: var(--shadow-md);
+            border: 4px solid #fff;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .img-preview-box:hover {
+            transform: scale(1.05);
+            border-color: var(--clr-accent);
+        }
+
+        .img-preview-box::after {
+            content: 'Click to Upload';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 5px 0;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .img-preview-box:hover::after {
+            opacity: 1;
+        }
+
+        .img-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .edit-actions {
+            margin-top: 50px;
+            display: flex;
+            gap: 20px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .preview-section {
+                order: -1;
+            }
+            .edit-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="edit-container reveal active">
+            <header class="edit-header">
+                <h1 class="edit-title" id="page-title">Edit Item</h1>
+                <a href="admin.html" class="back-btn">← Back to Admin</a>
+            </header>
+
+            <form id="edit-form">
+                <div class="form-grid">
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label for="name">Item Name</label>
+                            <input type="text" id="name" required placeholder="e.g. Special Keema Pav">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-group">
+                                <label for="price">Price (₹)</label>
+                                <input type="number" id="price" required placeholder="e.g. 150">
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <select id="category" required>
+                                    <option value="Quick Bites">Quick Bites</option>
+                                    <option value="Fries">Fries</option>
+                                    <option value="Chana Specials">Chana Specials</option>
+                                    <option value="Wings & Chicken">Wings & Chicken</option>
+                                    <option value="Tikka & Specials">Tikka & Specials</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" rows="4" placeholder="Describe the taste, ingredients, etc."></textarea>
+                        </div>
+
+                        <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                            <input type="checkbox" id="isFeatured" style="width: auto; height: 1.2rem; min-width: 1.2rem; cursor: pointer;">
+                            <label for="isFeatured" style="margin-bottom: 0; cursor: pointer;">Show as Featured on Home Page</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="badgeText">Badge Text (optional)</label>
+                            <input type="text" id="badgeText" placeholder="e.g. Bestseller, Trending, Hot">
+                            <small style="color: var(--clr-text-muted); font-size: 0.8rem;">Label shown on featured items (e.g. Bestseller). Leave empty for no badge.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="image">Image URL / Path</label>
+                            <input type="text" id="image" placeholder="images/item.jpg">
+                            <input type="file" id="file-upload" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="preview-section">
+                        <div class="preview-title">Menu Card Preview</div>
+                        <div class="img-preview-box">
+                            <img src="images/logo.jpg" id="img-preview" alt="Preview">
+                        </div>
+                        <p style="margin-top: 15px; font-size: 0.85rem; color: var(--clr-text-muted);">
+                            Click the photo above to upload from your device.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="edit-actions">
+                    <button type="button" class="btn btn-secondary btn-block" onclick="location.href='admin.html'">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration & Initialization
+        const firebaseConfig = {
+            projectId: "fried-zone",
+            databaseURL: "https://fried-zone-default-rtdb.firebaseio.com/"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('id');
+        const form = document.getElementById('edit-form');
+        const imgInput = document.getElementById('image');
+        const imgPreview = document.getElementById('img-preview');
+        const pageTitle = document.getElementById('page-title');
+
+        // Load existing data if editing
+        const loadItem = () => {
+            if (itemId) {
+                pageTitle.textContent = 'Edit Menu Item';
+                
+                db.ref('menuData/' + itemId).once('value').then((snapshot) => {
+                    const item = snapshot.val();
+                    if (item) {
+                        document.getElementById('name').value = item.name;
+                        document.getElementById('price').value = item.price;
+                        document.getElementById('category').value = item.category;
+                        document.getElementById('description').value = item.description || '';
+                        document.getElementById('image').value = item.image;
+                        document.getElementById('isFeatured').checked = item.isFeatured || false;
+                        document.getElementById('badgeText').value = item.badgeText || '';
+                        imgPreview.src = item.image || 'images/logo.jpg';
+                    } else {
+                        alert("Item not found in database!");
+                        window.location.href = 'admin.html';
+                    }
+                });
+            } else {
+                pageTitle.textContent = 'Add New Item';
+            }
+        };
+
+        loadItem();
+
+        const fileInput = document.getElementById('file-upload');
+        const previewBox = document.querySelector('.img-preview-box');
+
+        previewBox.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    imgPreview.src = event.target.result;
+                    imgInput.value = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        imgInput.addEventListener('input', (e) => {
+            imgPreview.src = e.target.value || 'images/logo.jpg';
+        });
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const itemData = {
+                name: document.getElementById('name').value,
+                price: Number(document.getElementById('price').value),
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value,
+                image: document.getElementById('image').value || 'images/logo.jpg',
+                isFeatured: document.getElementById('isFeatured').checked,
+                badgeText: document.getElementById('badgeText').value || '',
+                updatedAt: new Date().toISOString()
+            };
+
+            if (itemId) {
+                // Update existing
+                db.ref('menuData/' + itemId).update(itemData).then(() => {
+                    // Update legacy local storage if needed by others
+                    const menu = JSON.parse(localStorage.getItem('fz_menuData')) || [];
+                    const index = menu.findIndex(m => m.id == itemId);
+                    if (index !== -1) {
+                        menu[index] = { ...menu[index], ...itemData };
+                        localStorage.setItem('fz_menuData', JSON.stringify(menu));
+                    }
+
+                    alert('Menu item updated live!');
+                    window.location.href = 'admin.html';
+                });
+            } else {
+                // New item
+                const newId = 'm' + Date.now();
+                itemData.id = newId;
+                itemData.inStock = true;
+                itemData.createdAt = new Date().toISOString();
+                
+                db.ref('menuData/' + newId).set(itemData).then(() => {
+                    // Update legacy local storage
+                    const menu = JSON.parse(localStorage.getItem('fz_menuData')) || [];
+                    menu.push(itemData);
+                    localStorage.setItem('fz_menuData', JSON.stringify(menu));
+
+                    alert('New menu item added live!');
+                    window.location.href = 'admin.html';
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

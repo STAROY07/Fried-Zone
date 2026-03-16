@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - Fried Zone</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
+</head>
+
+<body>
+
+    <!-- Header Navigation -->
+    <header class="header scrolled">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <img src="images/logo.jpg" alt="Fried Zone" class="logo-img">
+                Fried<span>Zone</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="offers.html">Offers</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div id="auth-container-mobile" class="nav-actions-mobile">
+                    <!-- Injected by JS -->
+                </div>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn btn-outline nav-cart" id="nav-cart-btn" aria-label="View Cart">
+                    <span class="cart-text">Cart</span> (<span id="cart-count">0</span>)
+                </button>
+                <div id="auth-container">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 120px; padding-bottom: 80px;">
+        <div class="section-header reveal active">
+            <h2 class="section-title">My <span class="text-accent">Account</span></h2>
+            <p class="section-subtitle" id="account-welcome-msg">Manage your cart and track your orders.</p>
+        </div>
+
+        <div class="account-tabs">
+            <button class="tab-btn active" data-tab="cart-section">Shopping Cart</button>
+            <button class="tab-btn" data-tab="history-section">Order History</button>
+        </div>
+
+        <!-- Cart View -->
+        <div id="cart-section" class="tab-content active">
+            <div class="card" style="padding: 30px;">
+                <h3 style="margin-bottom: 20px;">Current Cart</h3>
+                <div id="account-cart-items" class="cart-items-list">
+                    <!-- Items injected via JS -->
+                </div>
+                <div class="cart-footer" id="account-cart-footer" style="margin-top: 30px; display: none;">
+                    <div style="display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: 800; margin-bottom: 20px;">
+                        <span>Subtotal:</span>
+                        <span id="account-cart-total">₹0</span>
+                    </div>
+                    <a href="checkout.html" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order History View -->
+        <div id="history-section" class="tab-content">
+            <div id="orders-list-container" class="orders-grid">
+                <!-- Orders injected via JS -->
+                <p style="text-align: center; color: var(--clr-text-muted);">Loading your orders...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="Fried Zone" class="footer-logo-img">
+                    <a href="#" class="logo">Fried<span>Zone</span></a>
+                    <p>The ultimate destination for premium fast food cravings.</p>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-icon" aria-label="Facebook">FB</a>
+                    <a href="#" class="social-icon" aria-label="Instagram">IG</a>
+                    <a href="#" class="social-icon" aria-label="Twitter">TW</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Fried Zone. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Slide-out Cart Panel (Hidden but kept for JS compatibility) -->
+    <div class="cart-panel" id="cart-panel" style="display: none;"></div>
+    <div class="cart-overlay" id="cart-overlay" style="display: none;"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Tab Switching Logic
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

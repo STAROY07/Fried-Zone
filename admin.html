@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fried Zone Admin</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
+    <style>
+        body {
+            background: var(--clr-bg);
+            color: var(--clr-text);
+            font-family: var(--font-main);
+        }
+
+        /* Admin Login View */
+        #admin-auth-view {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--clr-bg-alt);
+        }
+
+        .admin-auth-card {
+            background: var(--clr-bg-card);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 2px solid var(--clr-primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Admin Dashboard View */
+        #admin-dashboard-view {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 250px;
+            background: var(--clr-bg-card);
+            padding: 30px 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-sidebar .logo {
+            margin-bottom: 50px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sidebar-nav a {
+            padding: 12px 15px;
+            border-radius: var(--radius-sm);
+            color: var(--clr-text-muted);
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--clr-accent);
+        }
+
+        .admin-main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--clr-bg-card);
+            padding: 25px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--clr-primary);
+            box-shadow: 0 10px 30px rgba(232, 65, 24, 0.1);
+        }
+
+        .stat-card h4 {
+            color: var(--clr-text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .val {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--clr-text);
+        }
+
+        .stat-card .icon-bg {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 4rem;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+        }
+
+        .chart-container {
+            background: var(--clr-bg-card);
+            padding: 30px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
+            height: 400px;
+        }
+
+        /* Dashboard Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.4s;
+        }
+
+        /* Tables */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--clr-bg-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .admin-table th {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--clr-text-muted);
+            font-weight: 600;
+        }
+
+        /* The real chart is handled by Chart.js now */
+        canvas#salesChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .bar:hover {
+            background: var(--clr-accent);
+        }
+
+        .bar::after {
+            content: attr(data-val);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--clr-text-muted);
+            opacity: 0;
+            transition: 0.2s;
+        }
+
+        .bar:hover::after {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .admin-layout {
+                flex-direction: column;
+            }
+
+            .admin-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 20px;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+
+            .admin-sidebar .logo {
+                margin-bottom: 20px;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 10px;
+                gap: 10px;
+            }
+
+            .sidebar-nav a {
+                white-space: nowrap;
+                padding: 8px 15px;
+            }
+
+            .admin-main {
+                padding: 20px;
+            }
+
+            .admin-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .stat-card .val {
+                font-size: 1.8rem;
+            }
+
+            .chart-container {
+                height: 300px;
+                padding: 15px;
+            }
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            background: var(--clr-bg-card);
+            border-radius: var(--radius-md);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOGIN VIEW -->
+    <div id="admin-auth-view">
+        <div class="admin-auth-card">
+            <h2 style="margin-bottom: 10px;">Fried Zone <span style="color:var(--clr-primary);">Admin</span></h2>
+            <p style="color:var(--clr-text-muted); margin-bottom:30px;">Authorized personnel only</p>
+            <div id="admin-error" style="color:var(--clr-primary); display:none; margin-bottom:15px; font-weight:bold;">
+                Access Denied</div>
+            <form id="admin-login-form">
+                <div class="form-group" style="text-align:left;">
+                    <label>Admin Email</label>
+                    <input type="text" id="admin-user" required placeholder="owner@friedzone.com">
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label>Password</label>
+                    <input type="password" id="admin-pass" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Authenticate</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="admin-dashboard-view">
+        <div class="admin-layout">
+            <!-- Sidebar -->
+            <aside class="admin-sidebar">
+                <div class="logo">Fried<span style="color:var(--clr-primary);">Admin</span></div>
+                <nav class="sidebar-nav">
+                    <a class="nav-tab active" data-target="dashboard"><i class="icon"></i> Overview</a>
+                    <a class="nav-tab" data-target="orders"><i class="icon"></i> Orders</a>
+                    <a class="nav-tab" data-target="menu"><i class="icon"></i> Menu Items</a>
+                    <a class="nav-tab" data-target="messages"><i class="icon"></i> Messages</a>
+                    <a class="nav-tab" data-target="content"><i class="icon"></i> Content</a>
+                    <a class="nav-tab" data-target="settings"><i class="icon"></i> Settings</a>
+                </nav>
+                <div style="margin-top:auto;">
+                    <button id="admin-logout" class="btn btn-secondary btn-block">Logout</button>
+                    <a href="index.html" class="btn btn-outline btn-block" style="margin-top:10px;">Go to Site</a>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="admin-main">
+                <div class="admin-header">
+                    <h2>Dashboard</h2>
+                    <span style="color:var(--clr-text-muted);">Welcome back, Owner.</span>
+                </div>
+
+                <!-- Section: Overview -->
+                <div id="dashboard" class="content-section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>Total Orders</h4>
+                            <div class="val" id="total-orders-stat">0</div>
+                            <div class="icon-bg">📦</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Total Revenue</h4>
+                            <div class="val text-accent" id="total-revenue-stat">₹0</div>
+                            <div class="icon-bg">💰</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Active Customers</h4>
+                            <div class="val" id="active-users-stat">0</div>
+                            <div class="icon-bg">👥</div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="margin:0;">Sales Performance</h3>
+                        <div class="analytics-filters" style="display: flex; gap: 5px;">
+                            <button class="btn btn-secondary active-filter" data-range="7"
+                                onclick="filterAnalytics(7, this)"
+                                style="padding: 4px 10px; font-size: 0.75rem;">7D</button>
+                            <button class="btn btn-secondary" data-range="30" onclick="filterAnalytics(30, this)"
+                                style="padding: 4px 10px; font-size: 0.75rem;">1M</button>
+                            <button class="btn btn-secondary" data-range="90" onclick="filterAnalytics(90, this)"
+                                style="padding: 4px 10px; font-size: 0.75rem;">3M</button>
+                            <button class="btn btn-secondary" data-range="180" onclick="filterAnalytics(180, this)"
+                                style="padding: 4px 10px; font-size: 0.75rem;">6M</button>
+                            <button class="btn btn-secondary" data-range="365" onclick="filterAnalytics(365, this)"
+                                style="padding: 4px 10px; font-size: 0.75rem;">1Y</button>
+                            <button class="btn btn-primary" onclick="downloadPDFReport()"
+                                style="padding: 4px 10px; font-size: 0.75rem; margin-left:10px;">📄 Download PDF</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Section: Orders -->
+                <div id="orders" class="content-section">
+                    <h3 style="margin-bottom:20px;">Recent Orders</h3>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Type</th>
+                                    <th>Address</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-orders-table-body">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section: Menu -->
+                <div id="menu" class="content-section">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2>Menu Management</h2>
+                        <button class="btn btn-primary" onclick="addNewItem()" style="padding: 8px 16px;">+ Add
+                            Item</button>
+                    </div>
+                    <div class="table-responsive" style="margin-top:20px;">
+                        <table class="admin-table" id="admin-menu-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Badge</th>
+                                    <th>Stock</th>
+                                    <th>Featured</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-menu-table-body">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Messages Section -->
+                <div id="messages" class="content-section">
+                    <h2>Customer Messages & Feedback</h2>
+                    <div class="table-responsive" style="margin-top:20px;">
+                        <table class="admin-table" id="admin-messages-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Subject</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS Input -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <!-- Section: Content Editor -->
+                <div id="content" class="content-section">
+                    <h2>Website Content</h2>
+                    <div class="card"
+                        style="margin-top:20px; background: var(--clr-bg-card); padding: 30px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05);">
+                        <h3 style="margin-bottom: 15px;">Hero Section</h3>
+                        <div class="form-group">
+                            <label>Hero Title</label>
+                            <input type="text" id="edit-hero-title"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Hero Tagline</label>
+                            <textarea id="edit-hero-tagline" rows="2"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;"></textarea>
+                        </div>
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Contact Info</h3>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" id="edit-contact-phone"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Location</label>
+                            <input type="text" id="edit-contact-location"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Operating Hours</label>
+                            <input type="text" id="edit-contact-hours"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Offers Banner & Coupons</h3>
+                        <div class="form-group">
+                            <label>Offer Details Text</label>
+                            <textarea id="edit-offer-details" rows="2"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;"></textarea>
+                        </div>
+                        <div style="display: flex; gap: 15px; margin-top: 15px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label>Active Coupon Code</label>
+                                <input type="text" id="edit-coupon-code" placeholder="e.g. ZONE20"
+                                    style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Discount Percentage (%)</label>
+                                <input type="number" id="edit-coupon-discount" placeholder="e.g. 20" min="0" max="100"
+                                    style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                            </div>
+                        </div>
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Meet The Team (Owner)</h3>
+                        <div class="form-group">
+                            <label>Owner Name</label>
+                            <input type="text" id="edit-team-owner-name" placeholder="E.g., John Doe"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Owner Photo URL</label>
+                            <input type="url" id="edit-team-owner-photo" placeholder="https://link-to-photo.jpg"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Owner Info / Bio</label>
+                            <textarea id="edit-team-owner-info" rows="2" placeholder="Short description about the owner..."
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;"></textarea>
+                        </div>
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Meet The Team (Helper/Manager)</h3>
+                        <div class="form-group">
+                            <label>Helper Name</label>
+                            <input type="text" id="edit-team-helper-name" placeholder="E.g., Sarah Smith"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Helper Photo URL</label>
+                            <input type="url" id="edit-team-helper-photo" placeholder="https://link-to-photo.jpg"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Helper Info / Bio</label>
+                            <textarea id="edit-team-helper-info" rows="2" placeholder="Short description about the helper..."
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;"></textarea>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="saveSiteContent()"
+                            style="margin-top: 25px; width: 100%;">Save All Content</button>
+                    </div>
+                </div>
+
+                <!-- Section: Settings -->
+                <div id="settings" class="content-section">
+                    <h2>Shop Settings</h2>
+                    <div class="card"
+                        style="margin-top:20px; background: var(--clr-bg-card); padding: 30px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05);">
+                        <div class="form-group">
+                            <label>Shop Status</label>
+                            <select id="shop-status-toggle"
+                                style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px;">
+                                <option value="open">🟢 Shop is Open</option>
+                                <option value="closed">🔴 Shop is Closed</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label>Shop Opening Time / Custom Message</label>
+                            <input type="text" id="shop-message"
+                                placeholder="Show this message to customers when closed"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); color: #333; border-radius: 8px;">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveShopSettings()"
+                            style="margin-top: 20px; width: 100%;">Save Shop Settings</button>
+                    </div>
+
+                    <h2 style="margin-top: 40px;">Admin Credentials</h2>
+                    <div class="card"
+                        style="margin-top:20px; background: var(--clr-bg-card); padding: 30px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05);">
+                        <div class="form-group">
+                            <label>Admin Email / Username</label>
+                            <input type="text" id="admin-update-email"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>New Password</label>
+                            <input type="password" id="admin-update-pass"
+                                placeholder="Leave blank to keep current password"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;">
+                        </div>
+                        <button class="btn btn-secondary" onclick="saveAdminCredentials()"
+                            style="margin-top: 25px; width: 100%;">Update Credentials</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/admin-local.js"></script>
+</body>
+
+
+</html>

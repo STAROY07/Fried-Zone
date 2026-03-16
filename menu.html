@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Fried Zone</title>
+    <meta name="description"
+        content="Craving crispy, juicy fried chicken or a massive double cheeseburger? Welcome to Fried Zone. Order now!">
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
+</head>
+
+<body>
+
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <img src="images/logo.jpg" alt="Fried Zone" class="logo-img">
+                Fried<span>Zone</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="offers.html">Offers</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="account.html">My Orders</a></li>
+                </ul>
+                <div id="auth-container-mobile" class="nav-actions-mobile">
+                    <!-- Injected by JS -->
+                </div>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn btn-outline nav-cart" id="nav-cart-btn" aria-label="View Cart">
+                    <span class="cart-text">Cart</span> (<span id="cart-count">0</span>)
+                </button>
+                <div id="auth-container">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Spacer for fixed header -->
+
+
+        <!-- Menu Section -->
+        <section id="menu" class="menu section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">Explore Our <span class="text-accent">Menu</span></h2>
+                    <p class="section-subtitle">Freshly prepared, packed with flavor.</p>
+                </div>
+
+                <div class="menu-page-container">
+                    <!-- Sidebar Navigation -->
+                    <aside class="menu-sidebar">
+                        <h3>Categories</h3>
+                        <div class="sidebar-list" id="menu-categories">
+                            <div class="sidebar-link active" data-filter="All">All Items</div>
+                            <!-- Rendered by JS -->
+                        </div>
+                    </aside>
+
+                    <!-- Main Menu Content -->
+                    <div class="menu-main-content">
+                        <div id="menu-container">
+                            <!-- Javascript will inject sectioned categories and cards here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="Fried Zone" class="footer-logo-img">
+                    <a href="#" class="logo">Fried<span>Zone</span></a>
+                    <p>The ultimate destination for premium fast food cravings.</p>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-icon" aria-label="Facebook">FB</a>
+                    <a href="#" class="social-icon" aria-label="Instagram">IG</a>
+                    <a href="#" class="social-icon" aria-label="Twitter">TW</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Fried Zone. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Slide-out Cart Panel -->
+    <div class="cart-panel" id="cart-panel">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-cart-btn" id="close-cart-btn" aria-label="Close cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items-container">
+            <!-- Items injected via JS -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-price">₹0</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline btn-block" id="cod-btn">Cash on Delivery</button>
+                <button class="btn btn-primary btn-block" id="checkout-btn">Pay Online</button>
+            </div>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cart-overlay"></div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

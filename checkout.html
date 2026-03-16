@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Fried Zone</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
+</head>
+
+<body>
+
+    <!-- Header Navigation -->
+    <header class="header scrolled">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <img src="images/logo.jpg" alt="Fried Zone" class="logo-img">
+                Fried<span>Zone</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="offers.html">Offers</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="account.html">My Orders</a></li>
+                </ul>
+                <div id="auth-container-mobile" class="nav-actions-mobile">
+                    <!-- Injected by JS -->
+                </div>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn btn-outline nav-cart" id="nav-cart-btn" aria-label="View Cart">
+                    <span class="cart-text">Cart</span> (<span id="cart-count">0</span>)
+                </button>
+                <div id="auth-container">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+
+
+    <main class="container" style="padding-bottom: 80px;">
+        <div class="section-header reveal active">
+            <h2 class="section-title">Finalize Your <span class="text-accent">Order</span></h2>
+            <p class="section-subtitle">Choose your service type and confirm details.</p>
+        </div>
+
+        <div class="checkout-grid">
+            <!-- Checkout Form -->
+            <div class="checkout-form-container reveal active">
+                <div class="card" style="padding: 30px;">
+                    <h3 style="margin-bottom: 20px;">Order Details</h3>
+                    
+                    <!-- Order Type Toggle -->
+                    <div class="order-type-selector">
+                        <label class="order-type-option">
+                            <input type="radio" name="orderType" value="delivery" checked>
+                            <div class="type-card">
+                                <span class="type-icon">🚚</span>
+                                <span class="type-label">Home Delivery</span>
+                            </div>
+                        </label>
+                        <label class="order-type-option">
+                            <input type="radio" name="orderType" value="pickup">
+                            <div class="type-card">
+                                <span class="type-icon">🏬</span>
+                                <span class="type-label">Store Pickup</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <form id="checkout-form" style="margin-top: 30px;">
+                        <div id="delivery-address-section">
+                            <div class="form-group">
+                                <label for="delivery-address">Delivery Address</label>
+                                <textarea id="delivery-address" rows="3" placeholder="Enter your full address here..."></textarea>
+                                <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" id="save-address-checkbox" style="width: auto; cursor: pointer;">
+                                    <label for="save-address-checkbox" style="font-size: 0.9rem; cursor: pointer; font-weight: 500;">Save address for future orders</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="pickup-info-section" style="display: none;">
+                            <div class="info-card" style="background: var(--clr-bg-alt); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                <p style="font-weight: 600; color: var(--clr-accent);">📍 Fried Zone Store</p>
+                                <p style="font-size: 0.9rem; color: var(--clr-text-muted);">Main Street, Foodie Lane, City. Open 10 AM - 11 PM.</p>
+                            </div>
+                        </div>
+
+                        <div class="payment-section" style="margin-top: 40px;">
+                            <h4 style="margin-bottom: 15px;">Payment Method</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <button type="button" class="btn btn-secondary btn-block" id="checkout-cod-btn">Cash on Delivery</button>
+                                <button type="button" class="btn btn-primary btn-block" id="checkout-online-btn">Pay Online Now</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="checkout-summary-container reveal active">
+                <div class="card" style="padding: 30px; position: sticky; top: 120px;">
+                    <h3 style="margin-bottom: 20px;">Your Cart</h3>
+                    <div id="checkout-items-list" style="margin-bottom: 20px; max-height: 400px; overflow-y: auto;">
+                        <!-- Items injected via JS -->
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="coupon-code" placeholder="Enter Coupon Code (e.g. ZONE20)" style="flex: 1; padding: 10px; border: 1px solid rgba(0,0,0,0.1); border-radius: var(--radius-sm);">
+                            <button type="button" id="apply-coupon-btn" class="btn btn-secondary" style="padding: 10px 15px;">Apply</button>
+                        </div>
+                        <div id="coupon-msg" style="margin-top: 5px; font-size: 0.85rem; font-weight: 600;"></div>
+                    </div>
+                    <div style="border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800;">
+                            <span>Total Amount:</span>
+                            <span id="checkout-total-price" class="text-accent">₹0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="Fried Zone" class="footer-logo-img">
+                    <a href="#" class="logo">Fried<span>Zone</span></a>
+                    <p>The ultimate destination for premium fast food cravings.</p>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-icon" aria-label="Facebook">FB</a>
+                    <a href="#" class="social-icon" aria-label="Instagram">IG</a>
+                    <a href="#" class="social-icon" aria-label="Twitter">TW</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Fried Zone. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Slide-out Cart Panel (Hidden on checkout page but kept for JS compatibility if needed) -->
+    <div class="cart-panel" id="cart-panel" style="display: none;"></div>
+    <div class="cart-overlay" id="cart-overlay"></div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fried Zone - Premium Fast Food</title>
+    <meta name="description"
+        content="Craving crispy, juicy fried chicken or a massive double cheeseburger? Welcome to Fried Zone. Order now!">
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
+</head>
+
+<body>
+
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <img src="images/logo.jpg" alt="Fried Zone" class="logo-img">
+                Fried<span>Zone</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="offers.html">Offers</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="account.html">My Orders</a></li>
+                </ul>
+                <div id="auth-container-mobile" class="nav-actions-mobile">
+                    <!-- Injected by JS -->
+                </div>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn btn-outline nav-cart" id="nav-cart-btn" aria-label="View Cart">
+                    <span class="cart-text">Cart</span> (<span id="cart-count">0</span>)
+                </button>
+                <div id="auth-container">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Spacer for fixed header -->
+
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">Get In <span class="text-accent">Touch</span></h2>
+                    <p class="section-subtitle">We'd love to hear from you.</p>
+                </div>
+
+                <div class="contact-grid">
+                    <div class="contact-info reveal">
+                        <div class="info-card">
+                            <h4>Location</h4>
+                            <p id="text-contact-location">123 Crispy Avenue, Flavour Town, CA 90210</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Phone</h4>
+                            <p id="text-contact-phone">+1 (555) 123-ZONE</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Hours</h4>
+                            <p id="text-contact-hours">Mon-Sun: 10:00 AM - Midnight</p>
+                        </div>
+                        <div class="map-container" style="margin-top:20px; border-radius:var(--radius-md); overflow:hidden;">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3768.45524250284!2d73.23078!3d19.17529!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s!2sRoyal%20Paradise%2C%20Badlapur%20Gaon%2C%20Badlapur%2C%20Maharashtra%20421503!5e0!3m2!1sen!2sin!4v1711204859000!5m2!1sen!2sin" width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                    <div class="contact-form-wrapper reveal">
+                        <form id="contact-form" class="contact-form">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" placeholder="John Doe" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" placeholder="john@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <select id="subject" required
+                                    style="width: 100%; padding: 15px; background: rgba(0, 0, 0, 0.02); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: var(--radius-sm); font-family: var(--font-main); font-size: 1rem;">
+                                    <option value="" disabled selected>Select an option</option>
+                                    <option value="General Inquiry">General Inquiry</option>
+                                    <option value="Feedback">Feedback</option>
+                                    <option value="Order Issue">Order Issue</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea id="message" rows="4" placeholder="Your message here..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Meet The Team Section -->
+                <div class="team-section" style="margin-top: 60px;">
+                    <div class="section-header reveal">
+                        <h2 class="section-title">Meet Our <span class="text-accent">Team</span></h2>
+                        <p class="section-subtitle">The people behind the crispy goodness.</p>
+                    </div>
+                    <div class="team-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                        
+                        <!-- Owner Card -->
+                        <div class="team-card card reveal" style="text-align:center; padding: 30px;">
+                            <img id="img-team-owner-photo" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80" alt="Owner" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 3px solid var(--clr-accent); margin-bottom: 20px;">
+                            <h3 id="text-team-owner-name">John Doe</h3>
+                            <p style="color:var(--clr-accent); font-weight:600; margin-bottom:10px;">Founder & Head Chef</p>
+                            <p id="text-team-owner-info" class="text-muted">With 15 years of culinary experience, John started Fried Zone to bring the ultimate crispy chicken experience to the neighborhood.</p>
+                        </div>
+
+                        <!-- Helper/Manager Card -->
+                        <div class="team-card card reveal" style="text-align:center; padding: 30px;">
+                            <img id="img-team-helper-photo" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" alt="Manager" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 3px solid var(--clr-accent); margin-bottom: 20px;">
+                            <h3 id="text-team-helper-name">Sarah Smith</h3>
+                            <p style="color:var(--clr-accent); font-weight:600; margin-bottom:10px;">Store Manager</p>
+                            <p id="text-team-helper-info" class="text-muted">Sarah ensures every customer leaves with a smile and that operations run smoothly from open to close.</p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.jpg" alt="Fried Zone" class="footer-logo-img">
+                    <a href="#" class="logo">Fried<span>Zone</span></a>
+                    <p>The ultimate destination for premium fast food cravings.</p>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-icon" aria-label="Facebook">FB</a>
+                    <a href="#" class="social-icon" aria-label="Instagram">IG</a>
+                    <a href="#" class="social-icon" aria-label="Twitter">TW</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Fried Zone. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Slide-out Cart Panel -->
+    <div class="cart-panel" id="cart-panel">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-cart-btn" id="close-cart-btn" aria-label="Close cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items-container">
+            <!-- Items injected via JS -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-price">₹0</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline btn-block" id="cod-btn">Cash on Delivery</button>
+                <button class="btn btn-primary btn-block" id="checkout-btn">Pay Online</button>
+            </div>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cart-overlay"></div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
